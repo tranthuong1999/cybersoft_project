@@ -1,0 +1,26 @@
+.dropdown-menu{
+  background-color: white;
+  border: black;
+  border-width: 1px;
+  border: normal;
+}
+.dropdown-item :hover {
+  background-color: red;
+}
+.dropdown-menu .dropdown-item > li > a:hover {
+  background-image: none !important;
+  background-color: #000 !important;
+}
+.navbar {
+  background: white;
+}
+.dropdown-content a:hover {
+    background-color: red;
+}
+
+.dropdown-menu > li > a:hover, .dropdown-menu > li > a:focus {
+  background-image:none !important;
+}
+.dropdown-menu > li > a:hover, .dropdown-menu > li > a:focus {
+  background-color:red;
+}

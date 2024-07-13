@@ -1,0 +1,17 @@
+packages/admin/build
+packages/admin/config
+packages/admin/coverage
+packages/admin/node_modules
+packages/admin/public
+packages/admin/src/react-app-env.d.ts
+
+packages/frontend/build
+packages/frontend/config
+packages/frontend/coverage
+packages/frontend/node_modules
+packages/frontend/public
+
+node_modules
+
+jest.config.jest
+babel.config.js

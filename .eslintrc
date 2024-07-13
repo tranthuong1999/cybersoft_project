@@ -1,0 +1,84 @@
+{
+  "env": {
+    "browser": true,
+    "es2021": true,
+    // This is included in all configs shared by this plugin, so can be omitted if extending them.
+    "jest/globals": true
+  },
+  "extends": [
+    "airbnb",
+    "plugin:react/recommended",
+    "plugin:import/errors",
+    "plugin:import/warnings",
+    "plugin:import/typescript",
+    "plugin:jest/recommended",
+    "prettier"
+  ],
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "ecmaFeatures": {
+      "jsx": true
+    },
+    "ecmaVersion": 12,
+    "sourceType": "module"
+  },
+  "plugins": ["react", "@typescript-eslint", "jest", "prettier"],
+  "settings": {
+    "import/resolver": {
+      "node": {
+        "paths": ["src"]
+        // "extensions": [".js", ".jsx", ".ts", ".tsx"]
+      }
+    }
+  },
+  "rules": {
+    "prettier/prettier": ["error"],
+    "@typescript-eslint/no-unused-vars": [
+      "warn",
+      { "argsIgnorePattern": "^_" }
+    ],
+    "no-unused-vars": ["warn", { "argsIgnorePattern": "^_" }],
+    "no-undef": 0,
+    "import/no-extraneous-dependencies": 0,
+    "import/extensions": 0,
+    "import/prefer-default-export": 0,
+    "max-len": [
+      "warn",
+      {
+        "code": 120,
+        "comments": 120,
+        "ignoreUrls": true,
+        "ignoreStrings": true,
+        "ignoreTemplateLiterals": true,
+        "ignoreRegExpLiterals": true
+      }
+    ],
+    "function-paren-newline": 0,
+    "no-trailing-spaces": ["warn", { "ignoreComments": true }],
+    "arrow-body-style": 0,
+    "comma-dangle": 0,
+    "camelcase": 0,
+    "no-return-await": 0,
+    "no-param-reassign": 0,
+    "react/destructuring-assignment": 0,
+    "react/jsx-filename-extension": [
+      "warn",
+      { "extensions": [".tsx", ".jsx"] }
+    ],
+    "object-shorthand": 0,
+    "consistent-return": 0,
+    "prefer-destructuring": 1,
+    "react/require-default-props": 1,
+    "react/no-array-index-key": 1,
+    "react/prop-types": 0,
+    "no-restricted-syntax": 0,
+    "no-console": "warn",
+    "no-use-before-define": 0,
+    "@typescript-eslint/no-use-before-define": ["warn"],
+    "no-shadow": "off",
+    "jsx-quotes": ["error", "prefer-double"],
+    "react/display-name": "off",
+    "jsx-a11y/click-events-have-key-events": "off",
+    "import/no-cycle": "off"
+  }
+}

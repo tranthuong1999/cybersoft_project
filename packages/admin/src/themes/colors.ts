@@ -1,0 +1,15 @@
+export const PRIMARY_COLOR = '#582669';
+export const SECONDARY_COLOR = '#272C4F';
+export const COMPLEMENTARY_COLOR = '#EFEAF0';
+export const INACTIVE_COLOR = '#BCC8D3';
+export const WHITE_COLOR = '#BCC8D3';
+export const PLACEHOLDER_COLOR = '#A5A3A9';
+export const BORDER_COLOR = '#E4E7ED';
+export const BLACK_COLOR = '#333333';
+export const CONTENT_COLOR = '#596278';
+export const ERROR_COLOR = '#F56C6C';
+export const WARNING_COLOR = '#E6A23C';
+export const SUCCESS_COLOR = '#67C23A';
+export const INFO_COLOR = '#409EFF';
+export const DISABLED_CONTENT_COLOR = '#B4B4B4';
+export const DISABLED_BACKGROUND_COLOR = '#F3F3F3';

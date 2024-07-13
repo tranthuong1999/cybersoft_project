@@ -1,0 +1,169 @@
+# This config uses the `.circleci/extended/orb-test.yml` as its base, and then publishes the app to S3.
+# The workflow contained here demonstrates a practical application of `post-steps`
+# and using workspace persistence
+version: 2.1
+
+orbs:
+  node: circleci/node@4.3.0
+  # The S3 orb will setup the aws-cli and quickly copy or sync anything to s3.
+  # Orbs reduce the amount of configuration required for common tasks.
+  # See the orb documentation here: https://circleci.com/developer/orbs/orb/circleci/aws-s3
+  # NOTE: Environment variables containing the necessary secrets can be setup in the CircleCI UI
+  # See here https://circleci.com/docs/2.0/env-vars/#setting-an-environment-variable-in-a-project
+  aws-s3: circleci/aws-s3@1.0.9
+  # aws-cli: circleci/aws-cli@2.0.0
+
+executors:
+  node:
+    docker:
+      - image: circleci/node:12
+
+commands:
+  install:
+    steps:
+      - checkout
+
+      - run:
+          name: Show current branch
+          command: 'echo We are on branch: ${CIRCLE_BRANCH}'
+
+      - restore_cache:
+          name: Restore Yarn Package Cache
+          keys:
+            - yarn-packages-{{ checksum "yarn.lock" }}
+
+      - run:
+          name: Install Dependencies
+          command: yarn install --cache-folder ~/.cache/yarn
+
+      - save_cache:
+          name: Save Yarn Package Cache
+          key: yarn-packages-{{ checksum "yarn.lock" }}
+          paths:
+            - ~/.cache/yarn
+
+  lint:
+    parameters:
+      package:
+        type: string
+    steps:
+      - run:
+          name: Linting
+          command: npm run lint:<<parameters.package>>
+
+  test:
+    steps:
+      - run:
+          name: Testing
+          command: CI=${CI} npm run test:ci
+
+  build:
+    parameters:
+      package:
+        type: string
+    steps:
+      - run: 
+          name: Build project
+          command: npm run build:<<parameters.package>>
+      - persist_to_workspace:
+          root: ~/repo
+          paths:
+            - packages/<<parameters.package>>/build
+
+  upload:
+    parameters:
+      package:
+        type: string
+      bucket: 
+        type: string
+    steps:
+      - attach_workspace:
+          at: ~/repo
+
+      # - aws-cli/setup:
+      #     profile-name: default
+
+      - aws-s3/sync:
+          from: packages/<<parameters.package>>/build
+          to: 's3://<<parameters.bucket>>'
+          arguments: | # Optional arguments
+            --delete
+
+      # - run:
+      #     name: Upload to AWS S3
+      #     command: |
+      #       aws s3 sync --delete packages/zenta-frontend/build/ s3://${FRONTEND_BUCKET_DEV}/frontend
+      #       aws cloudfront create-invalidation --distribution-id $FRONTEND_DEV_CF_DIST_ID --paths "/*"
+      #       echo "Successfully uploaded to s3://${FRONTEND_BUCKET_DEV}/"
+      #       curl -X POST -H 'Content-type: application/json' --data '{"text":"Deploy latest frontend to development successfully."}' $SLACK_WEBHOOK_URL
+
+jobs:
+  build:
+    parameters:
+      package: 
+        default: "frontend"
+        type: string
+    executor: node
+    working_directory: ~/repo
+    environment:
+      # CI: true
+    steps:
+      - install
+      - lint:
+          package: <<parameters.package>>
+      - test
+      - build:
+          package: <<parameters.package>>
+
+  deploy:
+    parameters:
+      package: 
+        default: "frontend"
+        type: string
+      bucket:
+        type: string        
+    executor: node
+    working_directory: ~/repo
+    environment:
+    steps:
+      - upload:
+          package: <<parameters.package>>
+          bucket: <<parameters.bucket>>
+
+workflows:
+  version: 2
+  deploy-frontend-dev:
+    jobs:
+      - build:
+          package: "frontend"
+          filters:
+            branches:
+              only:
+                - frontend
+      # - deploy:
+      #     package: "frontend"
+      #     bucket: ${FRONTEND_BUCKET}
+      #     requires:
+      #       - build
+      #     filters:
+      #       branches:
+      #         only: 
+      #           - frontend
+
+  deploy-admin-dev:
+    jobs:
+      - build:
+          package: "admin"
+          filters:
+            branches:
+              only:
+                - admin
+      # - deploy:
+      #     package: "admin"
+      #     bucket: ${ADMIN_BUCKET}
+      #     requires:
+      #       - build
+      #     filters:
+      #       branches:
+      #         only: 
+      #           - admin
